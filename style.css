@@ -2,27 +2,72 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 body {
-  background: #000;
+  background: black;
   overflow: hidden;
-  font-family: sans-serif;
 }
 
 canvas {
   display: block;
   margin: auto;
-  background: url("assets/bg.png") no-repeat center;
-  background-size: cover;
+  background: url("assets/bg.png") center/cover no-repeat;
 }
 
-#hint {
+.overlay {
   position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
+  background: rgba(0,0,0,0.6);
   color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.overlay h1 {
+  font-size: 42px;
+  margin-bottom: 20px;
+}
+
+.overlay h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+#startBtn {
+  width: 160px;
+  cursor: pointer;
+}
+
+footer {
+  position: absolute;
+  bottom: 14px;
+  font-size: 13px;
   opacity: 0.7;
-  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+#touchHint p {
+  font-size: 24px;
+  opacity: 0.8;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
