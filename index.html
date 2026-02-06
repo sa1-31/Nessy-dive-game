@@ -3,12 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nessy Dive</title>
+  <title>Nessy Up</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- START MENU -->
+  <div id="startMenu" class="overlay">
+    <h1>Nessy Up</h1>
+    <img id="startBtn" src="assets/start.png" alt="Start">
+    <footer>made by Sa1 for endless community</footer>
+  </div>
+
+  <!-- TOUCH TO START -->
+  <div id="touchHint" class="overlay hidden">
+    <p>Touch to Start</p>
+  </div>
+
+  <!-- LOSE SCREEN -->
+  <div id="loseScreen" class="overlay hidden">
+    <h2>Nessy Lose</h2>
+    <div class="buttons">
+      <button id="retryBtn">Retry</button>
+      <button id="homeBtn">Home</button>
+    </div>
+  </div>
+
   <canvas id="game"></canvas>
-  <div id="hint">Tap / Click / Space</div>
 
   <script src="script.js"></script>
 </body>
