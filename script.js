@@ -8,6 +8,14 @@ function resize() {
 resize();
 window.addEventListener("resize", resize);
 
+// UI
+const startMenu = document.getElementById("startMenu");
+const touchHint = document.getElementById("touchHint");
+const loseScreen = document.getElementById("loseScreen");
+const startBtn = document.getElementById("startBtn");
+const retryBtn = document.getElementById("retryBtn");
+const homeBtn = document.getElementById("homeBtn");
+
 // Assets
 const nessyImg = new Image();
 nessyImg.src = "assets/nessy.png";
@@ -15,7 +23,16 @@ nessyImg.src = "assets/nessy.png";
 const orbImg = new Image();
 orbImg.src = "assets/endless-logo.png";
 
-// Game objects
+const sharkImg = new Image();
+sharkImg.src = "assets/shark.png";
+
+// Game state
+let gameRunning = false;
+let gravity = 0.25;
+let lift = -6;
+let score = 0;
+
+// Nessy
 let nessy = {
   x: 80,
   y: canvas.height / 2,
@@ -23,18 +40,30 @@ let nessy = {
   velocity: 0
 };
 
+// Orb
 let orb = {
-  x: canvas.width + 100,
-  y: Math.random() * (canvas.height - 80) + 40,
+  x: canvas.width + 200,
+  y: randomY(),
   size: 40
 };
 
-let gravity = 0.5;
-let lift = -8;
-let score = 0;
+// Shark
+let shark = {
+  x: canvas.width + 500,
+  y: randomY(),
+  size: 70
+};
 
-// Controls (mobile + PC)
+function randomY() {
+  return Math.random() * (canvas.height - 120) + 60;
+}
+
+// Controls
 function jump() {
+  if (!gameRunning) {
+    gameRunning = true;
+    touchHint.classList.add("hidden");
+  }
   nessy.velocity = lift;
 }
 
@@ -44,59 +73,94 @@ window.addEventListener("keydown", e => {
   if (e.code === "Space") jump();
 });
 
+// Start
+startBtn.onclick = () => {
+  startMenu.classList.add("hidden");
+  touchHint.classList.remove("hidden");
+  resetGame();
+};
+
+// Retry
+retryBtn.onclick = () => {
+  loseScreen.classList.add("hidden");
+  touchHint.classList.remove("hidden");
+  resetGame();
+};
+
+// Home
+homeBtn.onclick = () => {
+  loseScreen.classList.add("hidden");
+  startMenu.classList.remove("hidden");
+};
+
 // Game loop
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Nessy physics
-  nessy.velocity += gravity;
-  nessy.y += nessy.velocity;
-
-  if (nessy.y < 0) nessy.y = 0;
-  if (nessy.y + nessy.size > canvas.height) {
-    resetGame();
+  if (gameRunning) {
+    nessy.velocity += gravity;
+    nessy.y += nessy.velocity;
   }
 
-  // Orb movement
+  // Draw Nessy
+  ctx.drawImage(nessyImg, nessy.x, nessy.y, nessy.size, nessy.size);
+
+  // Orb
   orb.x -= 3;
   if (orb.x < -orb.size) {
-    resetOrb();
+    orb.x = canvas.width + 200;
+    orb.y = randomY();
   }
+  ctx.drawImage(orbImg, orb.x, orb.y, orb.size, orb.size);
 
-  // Collision
-  if (
-    nessy.x < orb.x + orb.size &&
-    nessy.x + nessy.size > orb.x &&
-    nessy.y < orb.y + orb.size &&
-    nessy.y + nessy.size > orb.y
-  ) {
+  // Shark
+  shark.x -= 4;
+  if (shark.x < -shark.size) {
+    shark.x = canvas.width + 400;
+    shark.y = randomY();
+  }
+  ctx.drawImage(sharkImg, shark.x, shark.y, shark.size, shark.size);
+
+  // Collisions
+  if (collide(nessy, orb)) {
     score++;
-    resetOrb();
+    orb.x = canvas.width + 200;
+    orb.y = randomY();
   }
 
-  draw();
+  if (collide(nessy, shark) || nessy.y + nessy.size > canvas.height) {
+    lose();
+  }
+
+  // Score
+  ctx.fillStyle = "#fff";
+  ctx.font = "18px Arial";
+  ctx.fillText("Score: " + score, 12, 26);
+
   requestAnimationFrame(update);
 }
 
-function draw() {
-  ctx.drawImage(nessyImg, nessy.x, nessy.y, nessy.size, nessy.size);
-  ctx.drawImage(orbImg, orb.x, orb.y, orb.size, orb.size);
-
-  ctx.fillStyle = "#fff";
-  ctx.font = "20px Arial";
-  ctx.fillText("Score: " + score, 12, 28);
+function collide(a, b) {
+  return (
+    a.x < b.x + b.size &&
+    a.x + a.size > b.x &&
+    a.y < b.y + b.size &&
+    a.y + a.size > b.y
+  );
 }
 
-function resetOrb() {
-  orb.x = canvas.width + 80;
-  orb.y = Math.random() * (canvas.height - 80) + 40;
+function lose() {
+  gameRunning = false;
+  loseScreen.classList.remove("hidden");
 }
 
 function resetGame() {
   score = 0;
+  gameRunning = false;
   nessy.y = canvas.height / 2;
   nessy.velocity = 0;
-  resetOrb();
+  orb.x = canvas.width + 200;
+  shark.x = canvas.width + 400;
 }
 
 update();
